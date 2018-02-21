@@ -1,5 +1,6 @@
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Data {
@@ -69,8 +70,39 @@ public class Data {
     public long encrypt() {
         if(encrypted)
             return value;
+        // generate random subset S of x
+        int subsetSize = rand.nextInt(x.length);
+        long[] S = randomSubset(subsetSize);
 
         return value;
+    }
+
+    // generates and returns a subset of x of size n
+    // note a hashSet is used to that duplicates of x are not added
+    public long[] randomSubset(int n) {
+        HashSet<Long> set = new HashSet<>();
+
+        int filled = 0;
+        int i = 0;
+        boolean addElement = false;
+        while (filled < n) {
+            // randomly decide if element is added
+            addElement = rand.nextBoolean();
+            if (addElement) {
+                set.add(x[i]);
+                filled++;
+            }
+            i = (i + 1) % x.length;
+        }
+
+        // convert hashset back to array
+        long[] S = new long[n];
+        i = 0;
+        for (Long value : set) {
+            S[i] = value;
+            i++;
+        }
+        return S;
     }
 
 
@@ -94,7 +126,7 @@ public class Data {
         // For 0 ≤ i ≤ τ sample xi ← Dγ,ρ(p). (Outputx=q·p+r) Relabel the xi’s so that x0 is the largest.
         // Restart unless x0 is odd and [x0]p is even. Let pk = (x0,x1,...xτ) and sk = p.
         x = new long[tau];
-        long max;
+        long max = 0;
         int maxLocation;
         do {
             if (testing)
