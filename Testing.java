@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class testing {
+public class Testing {
 
     public static long[] value;
     public static Random rand;
