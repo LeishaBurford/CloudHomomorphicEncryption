@@ -53,6 +53,7 @@ public class Data {
                     + " -- " + ((encrypted)? "encrypted" : "unencrypted"));
         this.value = value;
         this.encrypted = encrypted;
+        System.out.println("Private key: " + p);
         if(x == null) {
             if (testing)
                 System.out.println("Keys need initializing");
@@ -64,16 +65,45 @@ public class Data {
         }
     }
 
+    public long getValue() {
+        return value;
+    }
+
     // encrypts and returns the value according to DGHV scheme
     // anyone can access the encrypted value
     // TODO actually encrypt
     public long encrypt() {
         if(encrypted)
             return value;
+        // encryption is done as c = (value + 2r + 2 (sum of S)) mod x0
         // generate random subset S of x
         int subsetSize = rand.nextInt(x.length);
+        if(testing)
+            System.out.println("Value of subsetSize is: " + subsetSize );
         long[] S = randomSubset(subsetSize);
+        long sumOfS = 0;
+        for (int i = 0; i < subsetSize; i++) {
+            sumOfS += S[i];
+        }
+        if (testing)
+            System.out.println("\tValue of sum is: " + sumOfS + " mod " + p + " = " + sumOfS % p);
+        value = (value + 2 * generateR() + 2 *(sumOfS) % x[0]);
+        if (testing)
+            System.out.println("\tValue encrypted to: " + value);
+        encrypted = true;
+        return value;
+    }
 
+    // TODO this method should be restricted so only Alice class can use it
+    // TODO actually decrypt
+    public long decrypt() {
+        if(!encrypted)
+            return value;
+        // decryption is done as m = (c mod p) mod 2
+        value = (value % p) % 2;
+        if (testing)
+            System.out.println("\tValue decrypted to: " + value);
+        encrypted = false;
         return value;
     }
 
@@ -106,14 +136,7 @@ public class Data {
     }
 
 
-    // TODO this method should be restricted so only Alice class can use it
-    // TODO actually decrypt
-    public long decrypt() {
-        if(!encrypted)
-            return value;
 
-        return value;
-    }
 
     // lambda = 2
     // row = 2
