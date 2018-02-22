@@ -5,7 +5,8 @@ import java.util.Random;
 
 public class Data {
 
-    private boolean testing = true;
+    // TODO add a fileIdentifier that is also encrypted
+    private boolean testing = false;
     private long value; // this is the value of the data object
     private boolean encrypted; // whether or not value is encrypted
     private static long p; // private key, this needs to be the same for all Data objects
@@ -33,11 +34,13 @@ public class Data {
                     + " -- " + ((encrypted)? "encrypted" : "unencrypted"));
         this.value = value;
         this.encrypted = encrypted;
-        System.out.println("Private key: " + p);
+        if(testing)
+            System.out.println("Private key: " + p);
         if(x == null) {
-            if (testing)
+            if (testing) {
                 System.out.println("Keys need initializing");
                 System.out.println("Generating the private key, p");
+            }
             generatePrivateKey();
             if (testing)
                 System.out.println("Generating the public keys, x[]");
@@ -52,6 +55,11 @@ public class Data {
 
     public long getValue() {
         return value;
+    }
+
+    // TODO this is mostly for testing, shouldn't be a thing
+    public void setPrivateKey(long p) {
+        this.p = p;
     }
 
     // encrypts and returns the value according to DGHV scheme
