@@ -6,12 +6,11 @@ public class Testing {
     public static Random rand;
 
     public static void main(String[] args) {
-        rand = new Random();
-        long x = 0;
-        for (int i = 0; i < 10; i++) {
-            x = rand.nextLong();
-            System.out.println(x + " " + x % 2);
-        }
 
+        rand = new Random();
+        long numerator = rand.nextLong() % (long) Math.pow( (double) 2, 32);
+        long q = numerator / 11;
+
+        System.out.println(q + " " + numerator);
     }
 }
