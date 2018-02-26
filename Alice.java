@@ -6,10 +6,28 @@ public class Alice {
         Data fileZero = new Data(0, false);
         Data fileOne = new Data(1, false);
 
-        // encrypt the files
-        fileZero.encrypt();
-        fileOne.encrypt();
+        int fails = 0;
+        int successes = 0;
+        for(int i = 0; i < 10; i++) {
+            // encrypt the files
+            System.out.println("Run " + i);
+            System.out.println("Encrypting value 0...");
+            fileZero.encrypt();
+            System.out.println("Encrypting value 1...");
+            fileOne.encrypt();
 
+            System.out.println("Decrypting value 0...");
+            System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
+            successes += (0 == fileZero.decrypt()) ? 1 : 0;
+            fails += (0 == fileZero.decrypt()) ? 0 : 1;
+            System.out.println("Decrypting value 1...");
+            System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
+            successes += (0 == fileOne.decrypt()) ? 1 : 0;
+            fails += (0 == fileOne.decrypt()) ? 0 : 1;
+            System.out.println();
+        }
+
+        System.out.println("Success: " + successes + " Fails: " + fails);
         // we're doing it this way for now, cause i know the values "work"
         // Data fileZero = new Data(-2807686888l, true);
         // Data fileOne = new Data(3107316629l, true);
@@ -32,8 +50,8 @@ public class Alice {
         // decyrpt, and confirm that it did what it should
         // note that confirmation is a test, not something Alice can actually do
         // TODO look into a formal test, but totally not necessary
-        System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
-        System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
+        // System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
+        // System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
 
     }
 }

@@ -6,8 +6,9 @@ import java.util.Random;
 public class Data {
 
     // TODO add a fileIdentifier that is also encrypted
-    private boolean testing = false;
+    private boolean testing = true;
     private long value; // this is the value of the data object
+
     private boolean encrypted; // whether or not value is encrypted
     private static long p; // private key, this needs to be the same for all Data objects
     private static long[] x; // public key, this needs to be the same for all Data objects
@@ -34,8 +35,6 @@ public class Data {
                     + " -- " + ((encrypted)? "encrypted" : "unencrypted"));
         this.value = value;
         this.encrypted = encrypted;
-        if(testing)
-            System.out.println("Private key: " + p);
         if(x == null) {
             if (testing) {
                 System.out.println("Keys need initializing");
@@ -72,20 +71,26 @@ public class Data {
         // generate random subset S of x
         int subsetSize = rand.nextInt(x.length);
         if(testing)
-            System.out.println("Value of subsetSize is: " + subsetSize );
+            System.out.println("\tValue of subsetSize is: " + subsetSize );
         long[] S = randomSubset(subsetSize);
         long sumOfS = 0;
         for (int i = 0; i < subsetSize; i++) {
-            sumOfS += S[i];
+            sumOfS = (sumOfS + S[i]) % x[0];
         }
         if (testing)
-            System.out.println("\tValue of sum is: " + sumOfS + " mod " + p + " = " + sumOfS % p);
+            System.out.println("\tValue of subsetSum is: " + sumOfS);
 
         // the encryption of value
-        value = (value + (2 * generateR(rowPrime)) + (2 *(sumOfS))) % x[0];
+        // TODO current thoughts, there is overflow of the longs here? somehow?
+        value = (value + modularMultiplication(2L, generateR(rowPrime), x[0])
+                + modularMultiplication(2L, sumOfS, x[0])) % x[0];
+        // value = (value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) ) % x[0];
+
+
         if (testing)
             System.out.println("\tValue encrypted to: " + value);
         encrypted = true;
+
         return value;
     }
 
@@ -95,18 +100,18 @@ public class Data {
         if(!encrypted)
             return value;
         // decryption is done as m = (c mod p) mod 2
+        System.out.print("\tValue " + value );
         value = (value % p) % 2;
         if (testing)
-            System.out.println("\tValue decrypted to: " + value);
+            System.out.println(" decrypted to: " + value);
         encrypted = false;
         return value;
     }
 
     // generates and returns a subset of x of size n
-    // note a hashSet is used to that duplicates of x are not added
+    // note a hashSet is used so that duplicates of x are not added
     public long[] randomSubset(int n) {
         HashSet<Long> set = new HashSet<>();
-
         int filled = 0;
         int i = 0;
         boolean addElement = false;
@@ -127,38 +132,64 @@ public class Data {
             S[i] = value;
             i++;
         }
+        if(testing)
+            System.out.println("\tSubset S: " + Arrays.toString(S));
         return S;
     }
 
+    public long modularMultiplication(long a, long b, long mod) {
+        long result = 0;
 
-    // TODO gamma is the bit length of the xi's -- (q * p )+ r should be size gamma, determined by q.size
+        // Update a if it is greater than or equal to mod
+        a %= mod;
+
+        while (b != 0)
+        {
+            // If b is odd, add a with result
+            if (b % 2 != 0)
+                result = (result + a) % mod;
+
+            // Here we assume that doing 2*a
+            // doesn't cause overflow
+            a = (2L * a) % mod;
+
+            b = b / 2;  // b = b / 2
+        }
+
+        return result;
+    }
+
+    // TODO gamma is the bit length of the xi's -- (q * p) + r should be size gamma, determined by q.size
     private void generatePublicKey() {
         // For 0 ≤ i ≤ τ sample xi ← Dγ,ρ(p). (Outputx=q·p+r) Relabel the xi’s so that x0 is the largest.
         // Restart unless x0 is odd and [x0]p is even. Let pk = (x0,x1,...xτ) and sk = p.
         x = new long[tau];
         long max = 0;
         int maxLocation;
+        // if (testing)
+        //     System.out.println("Generating x's");
         do {
-            if (testing)
-                System.out.println("Generating x's");
+
             max = maxLocation = 0;
             for (int i = 0; i < tau; i++) {
                 long r = generateR(row);
                 long q = generateQ();
+
                 x[i] = (q * p) + r;
 
-                if(testing)
-                    System.out.println("\tComputed x_i is: " + x[i]);
+                // if(testing)
+                    // System.out.println("\tComputed x_i is: " + x[i]);
                 // keep track of the maximum element
                 if (x[i] > max) {
                     maxLocation = i;
                     max = x[i];
                 }
             }
-            if (testing)
-                System.out.println("\tValue of max is: " + max);
+
         } while(max % 2 == 0 || (max % p) % 2 != 0); // Restart unless max is odd and max % p is even.
 
+        if (testing)
+            System.out.println("\tValue of x[0] is: " + max);
         // swap x0 with the max element
         long temp = x[0];
         x[0] = max;
@@ -177,20 +208,18 @@ public class Data {
 
     private long generateQ() {
         // random integer(long) from 0 to (2^gamma)/p (exclusive)
-        long q = rand.nextLong() % (long) (Math.pow( (double) 2, gamma) / p);
-        if (testing)
-            System.out.println("\tValue of q is: " + q);
+        long q = rand.nextLong() % ((long) Math.pow( (double) 2, gamma) / p);
+        // if (testing)
+        //     System.out.println("\tValue of q is: " + q);
         return q;
     }
 
     // takes as argument either row or rowPrime (first used in keyGen, second in encryption)
     private long generateR(long exponent) {
         // random number(long) between -2^exponent and 2^exponent (both exclusive)
-        // if (testing)
-            // System.out.println("In R, mod is: " + (long) (Math.pow( (double) 2, rowPrime)) );
         long r = rand.nextLong() % (long) (Math.pow( (double) 2, exponent));
-        if (testing)
-            System.out.println("\tValue of r is: " + r);
+        // if (testing)
+        //     System.out.println("\tValue of r is: " + r);
         return r;
     }
 }
