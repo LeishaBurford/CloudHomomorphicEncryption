@@ -32,8 +32,8 @@ public class Testing {
 
         long a = 10123465234878998L;
         long b = 65746311545646431L;
-        long  m = 10005412336548794L;
-        System.out.println(modularMultiplication(a,b ,m));
+        Data d = new Data(1, false);
+        System.out.println(d.modularMultiplication(-2, 5, 3));
 
     }
 }

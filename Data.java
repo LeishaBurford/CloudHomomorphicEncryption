@@ -7,7 +7,7 @@ public class Data {
 
     // TODO add a fileIdentifier that is also encrypted
     private boolean testing = true;
-    private long value; // this is the value of the data object
+    public long value; // this is the value of the data object
 
     private boolean encrypted; // whether or not value is encrypted
     private static long p; // private key, this needs to be the same for all Data objects
@@ -81,14 +81,20 @@ public class Data {
             System.out.println("\tValue of subsetSum is: " + sumOfS);
 
         // the encryption of value
-        // TODO current thoughts, there is overflow of the longs here? somehow?
-        value = (value + modularMultiplication(2L, generateR(rowPrime), x[0])
+        long r = generateR(rowPrime);
+        System.out.println("c = (" + value + " + (2 * " + r + ") % " + x[0] + " + (2 * " + sumOfS +") % " + x[0] +
+                ") % " + x[0]);
+        System.out.println("c = (" + value + " + " + modularMultiplication(2L, r, x[0]) + " + "
+                + modularMultiplication(2L, sumOfS, x[0]) + ") % " + x[0]);
+
+        value = (value + modularMultiplication(2L, r, x[0])
                 + modularMultiplication(2L, sumOfS, x[0])) % x[0];
-        // value = (value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) ) % x[0];
+        // value = modularMultiplication(1, value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) , x[0]);
 
 
         if (testing)
             System.out.println("\tValue encrypted to: " + value);
+
         encrypted = true;
 
         return value;
@@ -101,6 +107,10 @@ public class Data {
             return value;
         // decryption is done as m = (c mod p) mod 2
         System.out.print("\tValue " + value );
+        // TODO, take this out, its probably never called, just here for testing
+        if (value < 0)
+            System.out.println("******** value is negative! *********");
+
         value = (value % p) % 2;
         if (testing)
             System.out.println(" decrypted to: " + value);
@@ -140,9 +150,17 @@ public class Data {
     public long modularMultiplication(long a, long b, long mod) {
         long result = 0;
 
+        // Java doesn't handle % when of form (-a) % b, so here we fix that
+        if (a < 0 || b < 0 || mod < 0) {
+            if (testing && mod < 0)
+                System.out.println("Mod is negative");
+            long numerator = a * b;
+            result = numerator - Math.floorDiv(numerator, mod) * mod;
+            return result;
+        }
+
         // Update a if it is greater than or equal to mod
         a %= mod;
-
         while (b != 0)
         {
             // If b is odd, add a with result
@@ -216,7 +234,7 @@ public class Data {
 
     // takes as argument either row or rowPrime (first used in keyGen, second in encryption)
     private long generateR(long exponent) {
-        // random number(long) between -2^exponent and 2^exponent (both exclusive)
+        // random number(long) between -(2^exponent) and 2^exponent (both exclusive)
         long r = rand.nextLong() % (long) (Math.pow( (double) 2, exponent));
         // if (testing)
         //     System.out.println("\tValue of r is: " + r);

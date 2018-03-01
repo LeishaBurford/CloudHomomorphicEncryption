@@ -8,23 +8,32 @@ public class Alice {
 
         int fails = 0;
         int successes = 0;
+        System.out.println();
         for(int i = 0; i < 10; i++) {
             // encrypt the files
             System.out.println("Run " + i);
+            System.out.println();
             System.out.println("Encrypting value 0...");
             fileZero.encrypt();
+
             System.out.println("Encrypting value 1...");
             fileOne.encrypt();
+
 
             System.out.println("Decrypting value 0...");
             System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
             successes += (0 == fileZero.decrypt()) ? 1 : 0;
             fails += (0 == fileZero.decrypt()) ? 0 : 1;
+
             System.out.println("Decrypting value 1...");
             System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
-            successes += (0 == fileOne.decrypt()) ? 1 : 0;
-            fails += (0 == fileOne.decrypt()) ? 0 : 1;
+            successes += (1 == fileOne.decrypt()) ? 1 : 0;
+            fails += (1 == fileOne.decrypt()) ? 0 : 1;
             System.out.println();
+
+            fileZero = new Data(0, false);
+            fileOne = new Data(1, false);
+
         }
 
         System.out.println("Success: " + successes + " Fails: " + fails);
@@ -49,7 +58,7 @@ public class Alice {
 
         // decyrpt, and confirm that it did what it should
         // note that confirmation is a test, not something Alice can actually do
-        // TODO look into a formal test, but totally not necessary
+        // TODO look into a formal test, but totally not necessary yet
         // System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
         // System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
 
