@@ -61,6 +61,32 @@ public class Data {
         this.p = p;
     }
 
+
+    // this doesn't make a difference
+    // public long simpleEncrypt(){
+    //     // implements c = m + p * q + 2r
+    //     if(encrypted)
+    //         return value;
+    //     long q = generateQ();
+    //     // the encryption of value
+    //     long r = generateR(rowPrime);
+    //     System.out.println("c = (" + value + " + (2 * " + r + ") % " + x[0] + " + (" + p + " * " + q +") % " + x[0] +
+    //             ") % " + x[0]);
+    //     System.out.println("c = (" + value + " + " + modularMultiplication(2L, r, x[0]) + " + "
+    //             + modularMultiplication(p, q, x[0]) + ") % " + x[0]);
+    //
+    //     value = (value + modularMultiplication(2L, r, x[0])
+    //             + modularMultiplication(p, q, x[0])) % x[0];
+    //     // value = modularMultiplication(1, value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) , x[0]);
+    //
+    //
+    //     if (testing)
+    //         System.out.println("\tValue encrypted to: " + value);
+    //
+    //     encrypted = true;
+    //     return 0;
+    // }
+
     // encrypts and returns the value according to DGHV scheme
     // anyone can access the encrypted value
     // TODO fix encryption
