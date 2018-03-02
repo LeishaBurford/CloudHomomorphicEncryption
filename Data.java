@@ -16,15 +16,15 @@ public class Data {
 
     // security parameters and resulting bit-lengths
     // lambda = 2
-    // row = 2
-    // rowPrime = 4
+    // rho = 2
+    // rhoPrime = 4
     // eta = 2^2 = 4
     // gamma = lambda ^ 5 = 32
     // t = gamma + lambda = 32 + 2 = 34
-    private static final int lambda = 2;
-    private static final int row = lambda;
-    private static final int rowPrime = lambda * 2;
-    // TODO must be greater than 2^multiplications * rowPrime
+    private static final int lambda = 4;
+    private static final int rho = lambda;
+    private static final int rhoPrime = lambda * 2;
+    // TODO must be greater than 2^multiplications * rhoPrime
     private static final int eta = (int) Math.pow( (double) lambda, (double) 2);
     private static final int gamma = (int) Math.pow( (double) lambda, (double) 5);;
     private static final int tau = gamma + lambda;
@@ -69,7 +69,7 @@ public class Data {
     //         return value;
     //     long q = generateQ();
     //     // the encryption of value
-    //     long r = generateR(rowPrime);
+    //     long r = generateR(rhoPrime);
     //     System.out.println("c = (" + value + " + (2 * " + r + ") % " + x[0] + " + (" + p + " * " + q +") % " + x[0] +
     //             ") % " + x[0]);
     //     System.out.println("c = (" + value + " + " + modularMultiplication(2L, r, x[0]) + " + "
@@ -77,7 +77,7 @@ public class Data {
     //
     //     value = (value + modularMultiplication(2L, r, x[0])
     //             + modularMultiplication(p, q, x[0])) % x[0];
-    //     // value = modularMultiplication(1, value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) , x[0]);
+    //     // value = modularMultiplication(1, value + (2L * generateR(rhoPrime)) + (2L * (sumOfS)) , x[0]);
     //
     //
     //     if (testing)
@@ -107,15 +107,15 @@ public class Data {
             System.out.println("\tValue of subsetSum is: " + sumOfS);
 
         // the encryption of value
-        long r = generateR(rowPrime);
+        long r = generateR(rhoPrime);
         System.out.println("c = (" + value + " + (2 * " + r + ") % " + x[0] + " + (2 * " + sumOfS +") % " + x[0] +
                 ") % " + x[0]);
         System.out.println("c = (" + value + " + " + modularMultiplication(2L, r, x[0]) + " + "
                 + modularMultiplication(2L, sumOfS, x[0]) + ") % " + x[0]);
 
         value = (value + modularMultiplication(2L, r, x[0])
-                + modularMultiplication(2L, sumOfS, x[0])) % x[0];
-        // value = modularMultiplication(1, value + (2L * generateR(rowPrime)) + (2L * (sumOfS)) , x[0]);
+                + modularMultiplication(2L, sumOfS, x[0]));
+        // value = modularMultiplication(1, value + (2L * generateR(rhoPrime)) + (2L * (sumOfS)) , x[0]);
 
 
         if (testing)
@@ -132,10 +132,12 @@ public class Data {
         if(!encrypted)
             return value;
         // decryption is done as m = (c mod p) mod 2
-        System.out.print("\tValue " + value );
         // TODO, take this out, its probably never called, just here for testing
         if (value < 0)
             System.out.println("******** value is negative! *********");
+        System.out.print("\tValue " + value );
+
+
 
         value = (value % p) % 2;
         if (testing)
@@ -216,13 +218,13 @@ public class Data {
 
             max = maxLocation = 0;
             for (int i = 0; i < tau; i++) {
-                long r = generateR(row);
+                long r = generateR(rho);
                 long q = generateQ();
 
                 x[i] = (q * p) + r;
 
                 // if(testing)
-                    // System.out.println("\tComputed x_i is: " + x[i]);
+                // System.out.println("\tComputed x_i is: " + x[i]);
                 // keep track of the maximum element
                 if (x[i] > max) {
                     maxLocation = i;
@@ -258,7 +260,7 @@ public class Data {
         return q;
     }
 
-    // takes as argument either row or rowPrime (first used in keyGen, second in encryption)
+    // takes as argument either rho or rhoPrime (first used in keyGen, second in encryption)
     private long generateR(long exponent) {
         // random number(long) between -(2^exponent) and 2^exponent (both exclusive)
         long r = rand.nextLong() % (long) (Math.pow( (double) 2, exponent));
