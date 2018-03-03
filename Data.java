@@ -27,7 +27,7 @@ public class Data {
     private static final int rhoPrime = lambda * 2; // 8
     // TODO must be greater than 2^multiplications * rhoPrime
     private static final int eta = (int) Math.pow( (double) lambda, (double) 2); // 16
-    private static final int gamma = (int) Math.pow( (double) lambda, (double) 5);; // 1024
+    private static final int gamma = (int) Math.pow( (double) lambda, (double) 5); // 1024
     private static final int tau = gamma + lambda; // 1028
 
     // value is the bit 1 or 0, or the encrypted value
@@ -69,14 +69,12 @@ public class Data {
         // For 0 ≤ i ≤ τ sample xi ← Dγ,ρ(p). (Outputx=q·p+r) Relabel the xi’s so that x0 is the largest.
         // Restart unless x0 is odd and [x0]p is even. Let pk = (x0,x1,...xτ) and sk = p.
         x = new BigInteger[tau];
-        BigInteger max;
-        int maxLocation;
+        BigInteger max = ZERO;
+        int maxLocation = 0;
         // if (testing)
         //     System.out.println("Generating x's");
         do {
 
-            max = ZERO;
-            maxLocation = 0;
             for (int i = 0; i < tau; i++) {
                 BigInteger r = generateR(rho);
                 BigInteger q = generateQ();
@@ -91,7 +89,7 @@ public class Data {
                     max = x[i];
                 }
             }
-        } while(max.mod(TWO).compareTo(ZERO) == 0 || (max.mod(p).mod(TWO)).compareTo(ZERO) != 0); // Restart unless max is odd and max % p is even.
+        } while((max.mod(TWO)).compareTo(ZERO) == 0 || ((max.mod(p)).mod(TWO)).compareTo(ZERO) != 0); // Restart unless max is odd and max % p is even.
 
         if (testing)
             System.out.println("\tValue of x[0] is: " + max);
@@ -156,13 +154,13 @@ public class Data {
 
         // the encryption of value
         BigInteger r = generateR(rhoPrime);
-        System.out.println("c = (" + value + " + (2 * " + r + ") % " + x[0] + " + (2 * " + sumOfS +") % " + x[0] +
+        System.out.println("c = (" + value + " + (2 * " + r + ") + " + "(2 * " + sumOfS +") "  +
                 ") % " + x[0]);
 
         // c = (m + 2* r + 2 * sumOfS ) % x[0]
-        value = value.add(modOp(TWO.multiply(r), x[0])).add(modOp(TWO.multiply(sumOfS), x[0])).mod(x[0]);
+        value = ((value.add(modOp(TWO.multiply(r), x[0]))).add(modOp(TWO.multiply(sumOfS), x[0]))).mod(x[0]);
 
-        if (testing)
+        // if (testing)
             System.out.println("\tValue encrypted to: " + value);
 
         encrypted = true;
@@ -208,13 +206,11 @@ public class Data {
         // TODO, take this out, its probably never called, just here for testing
         if (value.compareTo(ZERO) < 0)
             System.out.println("******** value is negative! *********");
-        System.out.print("\tValue " + value );
 
-
-
+        System.out.println("\tValue " + value );
         value = (value.mod(p)).mod(TWO);
         if (testing)
-            System.out.println(" decrypted to: " + value);
+            System.out.println(" decrypted to: \n" + value);
         encrypted = false;
         return value.intValue();
     }
@@ -237,7 +233,6 @@ public class Data {
             }
             i = (i + 1) % x.length;
         }
-        System.out.println("HashSet Size " + set.size() + " n " + n);
         // convert hashset back to array
         BigInteger[] S = new BigInteger[n];
         i = 0;
