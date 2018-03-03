@@ -1,11 +1,10 @@
-import java.util.Arrays;
+import java.math.BigInteger;
 import java.util.Random;
 
 public class Testing {
 
     public static long[] value;
     public static Random rand;
-
 
     public static long modularMultiplication(long a, long b, long mod) {
         long result = 0;
@@ -32,8 +31,11 @@ public class Testing {
 
         long a = 10123465234878998L;
         long b = 65746311545646431L;
-        Data d = new Data(1, false);
-        System.out.println(d.modularMultiplication(-2, 5, 3));
+        BigInteger b2 = BigInteger.valueOf(-100);
+        BigInteger bi = BigInteger.valueOf(1);
+        BigInteger b3 = BigInteger.valueOf(6);
+
+        System.out.println(b2.divide(b3));
 
     }
 }

@@ -1,10 +1,12 @@
+import java.math.BigInteger;
+
 public class Alice {
 
     public static void main(String[] args) {
 
         // create the files -- this is the goal
-        Data fileZero = new Data(0, false);
-        Data fileOne = new Data(1, false);
+        Data fileZero = new Data(BigInteger.ZERO, false);
+        Data fileOne = new Data(BigInteger.ONE, false);
 
         int fails = 0;
         int successes = 0;
@@ -31,8 +33,8 @@ public class Alice {
             fails += (1 == fileOne.decrypt()) ? 0 : 1;
             System.out.println();
 
-            fileZero = new Data(0, false);
-            fileOne = new Data(1, false);
+            fileZero = new Data(BigInteger.ZERO, false);
+            fileOne = new Data(BigInteger.ONE, false);
 
         }
 
@@ -47,7 +49,7 @@ public class Alice {
         // send files to the cloud
         // alice removes these files from her system, and just keeps their identifiers
         // for now, the id is the file's encrypted value
-        
+
         // sometime later...
         // Alice can't remember what's in the zero file
 
