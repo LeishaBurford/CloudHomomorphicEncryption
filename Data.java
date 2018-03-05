@@ -2,17 +2,18 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.function.BinaryOperator;
 
 public class Data {
 
     // cause BigInteger is annoying...
     private static final BigInteger ZERO = BigInteger.ZERO;
     private static final BigInteger ONE = BigInteger.ONE;
-    private static final BigInteger TWO = BigInteger.valueOf(2L);
-    private static final BigInteger N_ONE = BigInteger.valueOf(-1L);
+    private static final BigInteger TWO = BigInteger.valueOf(2);
+    private static final BigInteger N_ONE = BigInteger.valueOf(-1);
 
     // TODO add a fileIdentifier that is also encrypted
-    private boolean testing = false; // to print, or not to print all the data
+    private boolean testing = true; // to print, or not to print all the data
     public BigInteger value; // this is the value of the data object
 
     private boolean encrypted; // whether or not value is encrypted
@@ -60,6 +61,12 @@ public class Data {
     private void generatePrivateKey() {
         // Generate a random prime integer p of size η bits
         p = BigInteger.probablePrime(eta, rand);
+        // random between 0 and 2^exponent - 1, inclusive
+        // do {
+        //     p = new BigInteger(eta - 1, rand);
+        //     p = p.add(ONE.add((TWO.pow(eta).subtract(TWO.pow(eta - 1))).abs()));
+        // } while(p.mod(TWO).compareTo(ZERO) == 0 || p.compareTo(TWO.pow(eta)) == 0);
+
         if (testing)
             System.out.println("\tValue of p is: " + p);
     }
@@ -69,12 +76,13 @@ public class Data {
         // For 0 ≤ i ≤ τ sample xi ← Dγ,ρ(p). (Outputx=q·p+r) Relabel the xi’s so that x0 is the largest.
         // Restart unless x0 is odd and [x0]p is even. Let pk = (x0,x1,...xτ) and sk = p.
         x = new BigInteger[tau];
-        BigInteger max = ZERO;
-        int maxLocation = 0;
+        BigInteger max;
+        int maxLocation;
         // if (testing)
         //     System.out.println("Generating x's");
         do {
-
+            max = ZERO;
+            maxLocation = 0;
             for (int i = 0; i < tau; i++) {
                 BigInteger r = generateR(rho);
                 BigInteger q = generateQ();
@@ -117,13 +125,16 @@ public class Data {
     }
 
     // generates and returns a random in range [ 0, (2^gamma)/p )
-    // so it's actually going to 2^(gamma - eta), where eta is the bit length of p
-    // cause 2^gamma / 2^eta = 2^(gamma - eta)
     // TODO, check if the above is allowed
     private BigInteger generateQ() {
 
-        // random between 0 and 2^(gamma - eta)- 1, inclusive
-        BigInteger q = new BigInteger(gamma - eta, rand);
+        BigInteger q;
+        BigInteger upperLimit = (TWO.pow(gamma)).divide(p);
+        do {
+            // random between 0 and 2^(gamma - eta)- 1, inclusive
+            q = new BigInteger(gamma - eta, rand);
+        } while (q.compareTo(upperLimit) > 0 && q.mod(TWO).compareTo(BigInteger.ZERO) == 0);
+
         // if (testing)
         //     System.out.println("\tValue of q is: " + q);
         return q;
@@ -135,31 +146,36 @@ public class Data {
     public BigInteger encrypt() {
         if(encrypted)
             return value;
+        BigInteger r;
+        BigInteger sumOfS;
+        do {
+            // encryption is done as c = (value + 2r + 2 (sum of S)) mod x0
+            // generate random subset S of x
+            int subsetSize = rand.nextInt(x.length);
+            if (testing)
+                System.out.println("\tValue of subsetSize is: " + subsetSize);
 
-        // encryption is done as c = (value + 2r + 2 (sum of S)) mod x0
-        // generate random subset S of x
-        int subsetSize = rand.nextInt(x.length);
-        if(testing)
-            System.out.println("\tValue of subsetSize is: " + subsetSize );
+            BigInteger[] S = randomSubset(subsetSize);
+            sumOfS = ZERO;
+            // calculate sumOfS % x[0]
+            for (int i = 0; i < subsetSize; i++) {
+                // System.out.println("sumOfS " + sumOfS + " s[i] " + S[i] + " " + " x[0] " + x[0]);
+                sumOfS = (sumOfS.add(S[i]));
+            }
+            if (testing)
+                System.out.println("\tValue of subsetSum is: " + sumOfS);
 
-        BigInteger[] S = randomSubset(subsetSize);
-        BigInteger sumOfS = ZERO;
-        // calculate sumOfS % x[0]
-        for (int i = 0; i < subsetSize; i++) {
-            // System.out.println("sumOfS " + sumOfS + " s[i] " + S[i] + " " + " x[0] " + x[0]);
-            sumOfS = (sumOfS.add(S[i])).mod(x[0]);
-        }
-        if (testing)
-            System.out.println("\tValue of subsetSum is: " + sumOfS);
+            // the encryption of value
+            r = generateR(rhoPrime);
+            BigInteger q = generateQ();
+            System.out.println("c = (" + value + " + (2 * " + r + ") + " + "(2 * " + sumOfS + ") " +
+                    ") % " + x[0]);
 
-        // the encryption of value
-        BigInteger r = generateR(rhoPrime);
-        System.out.println("c = (" + value + " + (2 * " + r + ") + " + "(2 * " + sumOfS +") "  +
-                ") % " + x[0]);
+            // c = (m + 2* r + 2 * sumOfS ) % x[0]
+        }while ((TWO.multiply(r)).abs().compareTo(p.divide(TWO).abs()) >= 0);
 
-        // c = (m + 2* r + 2 * sumOfS ) % x[0]
         value = ((value.add(modOp(TWO.multiply(r), x[0]))).add(modOp(TWO.multiply(sumOfS), x[0]))).mod(x[0]);
-
+        // value = modOp((value.add(TWO.multiply(r))).add(p.multiply(q)), x[0]);
         // if (testing)
             System.out.println("\tValue encrypted to: " + value);
 
@@ -177,16 +193,8 @@ public class Data {
             if (testing && b.compareTo(ZERO) < 0)
                 System.out.println(" ***** Mod is negative *****");
 
-            // here the remainder of a % b is calc'd as r = a - floor(a / b) * b
-            // so when bigInteger does integer division, it rounds closest to zero, rather than to
-            // lowest integer, so that causes problems when the numerator is negative
-            // we fix that problem here
-            BigInteger aOverMod = a.divide(b);
-            // if the number is negative add -1
-            if(aOverMod.compareTo(ZERO) < 0) {
-                aOverMod = aOverMod.add(N_ONE);
-            }
-            result = a.subtract(aOverMod.multiply(b));
+            // here the remainder of a % b is calc'd as r = a - toNearestInt(a / b) * b
+            result = a.subtract(divRoundNearestInt(a, b).multiply(b));
             return result;
         } else {
             // TODO make more efficient? if time
@@ -194,7 +202,40 @@ public class Data {
         }
     }
 
+    // so when bigInteger does integer division, it rounds closest to zero, rather than to
+    // nearest integer, so that causes problems when the numerator is negative
+    // computes a / b, rounded to nearest integer, rather than to 0
+    public BigInteger divRoundNearestInt(BigInteger a, BigInteger b){
+        // calc the quotient
+        BigInteger quotient =  a.divide(b); // note this is auto rounded to zero
+        // calc the remainder
+        BigInteger remainder = a.mod(b);
+        boolean isNegative = a.compareTo(ZERO) < 0;
+        if ((remainder.subtract(b)).abs().compareTo(remainder) > 0 && !isNegative) {
+            // remainder / b < 0.5, return number rounded to zero
+            return quotient;
+        }
+        if ((remainder.subtract(b)).abs().compareTo(remainder) > 0 && isNegative) {
+            // remainder / b > 0.5, return number rounded away from zero
+            quotient = quotient.add(N_ONE);
+            return quotient;
+        }
+        if ((remainder.subtract(b)).abs().compareTo(remainder) < 0 && !isNegative) {
+            // remainder / b > 0.5, return number rounded away from zero
+            quotient = quotient.add(ONE);
+            return quotient;
+        }
+        if ((remainder.subtract(b)).abs().compareTo(remainder) < 0 && isNegative){
+            // remainder / b > 0.5, return number rounded towards  zero
+            // quotient = quotient.add(N_ONE);
+            return quotient;
+        }
 
+        // i really hope this doesn't happen
+        if (testing)
+            System.out.println("######## Decimal is 0.5 #######");
+        return quotient;
+    }
 
     // TODO this method should be restricted so only Alice class can use it
     // TODO fix decrypt -- likely that problem is in encrypt

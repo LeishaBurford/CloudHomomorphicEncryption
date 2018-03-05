@@ -4,7 +4,7 @@ public class Alice {
 
     public static void main(String[] args) {
 
-        // create the files -- this is the goal
+        // create the files
         Data fileZero = new Data(BigInteger.ZERO, false);
         Data fileOne = new Data(BigInteger.ONE, false);
 
