@@ -1,3 +1,4 @@
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 
 public class Alice {
@@ -5,9 +6,11 @@ public class Alice {
     public static void main(String[] args) {
 
         // create the files
-        Data fileZero = new Data(BigInteger.ZERO, false);
-        Data fileOne = new Data(BigInteger.ONE, false);
+        // Data fileZero = new Data(BigInteger.ZERO, false);
+        // Data fileOne = new Data(BigInteger.ONE, false);
 
+        SimpleData fileZero = new SimpleData(0, false);
+        SimpleData fileOne = new SimpleData(1, false);
         int fails = 0;
         int successes = 0;
         System.out.println();
@@ -33,9 +36,10 @@ public class Alice {
             fails += (1 == fileOne.decrypt()) ? 0 : 1;
             System.out.println();
 
-            fileZero = new Data(BigInteger.ZERO, false);
-            fileOne = new Data(BigInteger.ONE, false);
-
+            // fileZero = new Data(BigInteger.ZERO, false);
+            // fileOne = new Data(BigInteger.ONE, false);
+            fileOne = new SimpleData(1, false);
+            fileZero = new SimpleData(0, false);
         }
 
         System.out.println("Success: " + successes + " Fails: " + fails);
