@@ -4,6 +4,7 @@ import java.util.Random;
 public class SimpleData {
     private long value;
     private boolean encrypted;
+    private long dataID; // this is essentially the encryption of value, with a different ciphertext
     private static long p;
     private Random rand;
 
@@ -22,6 +23,27 @@ public class SimpleData {
             System.out.println("generating p...");
             generatePrivateKey();
         }
+        setDataID();
+    }
+
+    // this shouldn't be called on encrypted data
+    private void setDataID() {
+        if(encrypted) return;
+        // get the value
+        long temp = value;
+        // now run the encryption to generate ciphertext
+        encrypt();
+        // value is now the dataID
+        dataID = value;
+        // restore data value
+        value = temp;
+        // restore encryption status
+        encrypted = false;
+
+    }
+
+    public long getDataID() {
+        return dataID;
     }
 
     private void generatePrivateKey() {
