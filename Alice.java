@@ -31,6 +31,7 @@ public class Alice {
         // System.out.println(fileZero.encrypt());
         // System.out.println(fileOne.getDataID() + " " + fileZero.getDataID());
         // System.out.println(fileOne.decrypt() + " " + fileZero.decrypt());
+        // System.out.println(fileIdentifiers.toString());
 
         // send files to the cloud
         // alice removes these files from her system, and just keeps their identifiers

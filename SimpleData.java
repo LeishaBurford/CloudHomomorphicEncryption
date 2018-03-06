@@ -1,3 +1,5 @@
+import sun.java2d.pipe.SpanShapeRenderer;
+
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -29,6 +31,8 @@ public class SimpleData {
     // this shouldn't be called on encrypted data
     private void setDataID() {
         if(encrypted) return;
+        if (testing)
+            System.out.println("Setting id not value");
         // get the value
         long temp = value;
         // now run the encryption to generate ciphertext
@@ -39,8 +43,15 @@ public class SimpleData {
         value = temp;
         // restore encryption status
         encrypted = false;
-
     }
+
+    // this one needs to be called if the data is already encrypted
+    private void setDataID(long dataID) {
+
+        if(!encrypted) return;
+        this.dataID = dataID;
+    }
+
 
     public long getDataID() {
         return dataID;
@@ -82,4 +93,23 @@ public class SimpleData {
         long randomNumber = rand.nextLong() % (long) Math.pow(2, numBits);
         return Math.abs(randomNumber);
     }
+
+    public long getValue() { return value;}
+    // methods for circuit stuff
+
+    // so because we don't worry about integer overflow, this is actually xor
+    // this adds the value of a data object to this and returns this where value = this.value + other.value
+    public SimpleData add(SimpleData other ){
+        this.value = this.value + other.value;
+        return this;
+    }
+
+    // this multiplies the value of a data object to this and returns
+    // this where value = this.value * other.value
+    public SimpleData multiply(SimpleData other) {
+        this.value = this.value * other.value;
+        return this;
+    }
+
+
 }
