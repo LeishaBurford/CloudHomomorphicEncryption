@@ -1,5 +1,3 @@
-import sun.java2d.pipe.SpanShapeRenderer;
-
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -130,22 +128,17 @@ public class Testing {
         // System.out.println(divRoundNearestInt(a, c) + " " + divRoundNearestInt(a, d));
         // System.out.println(divRoundNearestInt(b, c) + " " + divRoundNearestInt(b, d));
 
-        SimpleData f0 = new SimpleData(0, false);
-        SimpleData f1 = new SimpleData(1, false);
-        SimpleData one = new SimpleData(1, false);
+        long someKey = 1345;
+        long someOtherKey = 3457;
+        long noise1 = 243;
+        long noise2 = 987;
+        long cipherText = someKey * noise1 + 2 * noise2 + someOtherKey;
+        long decrypted = (cipherText % someKey ) % 2;
 
-        // encrypt them
-        f0.encrypt();
-        f1.encrypt();
-        one.encrypt();
+        System.out.println(decrypted);
 
 
 
-        SimpleData f00 = new SimpleData( (f0.getValue() * f0.getValue()) + 1, true);
-        SimpleData f11 = new SimpleData( (f1.getValue() * f1.getValue()) + 1, true);
-
-        System.out.println(f00.decrypt());
-        System.out.println(f11.decrypt());
 
 
 
