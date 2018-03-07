@@ -2,8 +2,8 @@ public class TestingCloud {
 
     public static void main(String[] args) {
         Cloud cloud = new Cloud();
-        SimpleData f0 = new SimpleData(1, false);
-        SimpleData f1 = new SimpleData(0, false);
+        Data f0 = new Data(1, false);
+        Data f1 = new Data(0, false);
 
         // encrypt them
         f0.encrypt();
@@ -15,7 +15,7 @@ public class TestingCloud {
         cloud.addFile(f1);
 
         // get the result of a fetch
-        SimpleData result = cloud.get(f0.getDataID());
+        Data result = cloud.get(f0.getDataID());
 
         System.out.println("Multiplication is: " + result.getValue());
 
