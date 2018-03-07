@@ -3,7 +3,7 @@ public class TestingCloud {
     public static void main(String[] args) {
         Cloud cloud = new Cloud();
         SimpleData f0 = new SimpleData(1, false);
-        SimpleData f1 = new SimpleData(1, false);
+        SimpleData f1 = new SimpleData(0, false);
 
         // encrypt them
         f0.encrypt();

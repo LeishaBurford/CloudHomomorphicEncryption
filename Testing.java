@@ -1,3 +1,5 @@
+import sun.java2d.pipe.SpanShapeRenderer;
+
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -117,16 +119,34 @@ public class Testing {
     }
     public static void main(String[] args) {
         rand = new Random();
-        BigInteger a = BigInteger.valueOf(5);
-        BigInteger b = BigInteger.valueOf(-5);
-        BigInteger c = BigInteger.valueOf(4);
-        BigInteger d = BigInteger.valueOf(3);
+        // BigInteger a = BigInteger.valueOf(5);
+        // BigInteger b = BigInteger.valueOf(-5);
+        // BigInteger c = BigInteger.valueOf(4);
+        // BigInteger d = BigInteger.valueOf(3);
+        //
+        // System.out.println(a.divide(c) + " " + a. divide(d));
+        // System.out.println(b.divide(c) + " " + b. divide(d));
+        //
+        // System.out.println(divRoundNearestInt(a, c) + " " + divRoundNearestInt(a, d));
+        // System.out.println(divRoundNearestInt(b, c) + " " + divRoundNearestInt(b, d));
 
-        System.out.println(a.divide(c) + " " + a. divide(d));
-        System.out.println(b.divide(c) + " " + b. divide(d));
+        SimpleData f0 = new SimpleData(0, false);
+        SimpleData f1 = new SimpleData(1, false);
+        SimpleData one = new SimpleData(1, false);
 
-        System.out.println(divRoundNearestInt(a, c) + " " + divRoundNearestInt(a, d));
-        System.out.println(divRoundNearestInt(b, c) + " " + divRoundNearestInt(b, d));
+        // encrypt them
+        f0.encrypt();
+        f1.encrypt();
+        one.encrypt();
+
+
+
+        SimpleData f00 = new SimpleData( (f0.getValue() * f0.getValue()) + 1, true);
+        SimpleData f11 = new SimpleData( (f1.getValue() * f1.getValue()) + 1, true);
+
+        System.out.println(f00.decrypt());
+        System.out.println(f11.decrypt());
+
 
 
 

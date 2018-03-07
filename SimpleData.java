@@ -76,9 +76,14 @@ public class SimpleData {
         return value;
     }
 
+    // TODO, would be nice if this was private, but then Alice can't decrypt...
+    // maybe add a private key parameter, Alice can get the private key from creating a simpleData object
+    // maybe Alice should be the one to generate the private key, and send that when creating a data object
     public int decrypt() {
-        if(!encrypted)
+        if(!encrypted) {
+            System.out.println("not encrypted");
             return (int) value;
+        }
         if (testing)
             System.out.print("Value " + value);
         value = (value % p) % 2;
@@ -99,16 +104,19 @@ public class SimpleData {
 
     // so because we don't worry about integer overflow, this is actually xor
     // this adds the value of a data object to this and returns this where value = this.value + other.value
-    public SimpleData add(SimpleData other ){
-        this.value = this.value + other.value;
-        return this;
+    public SimpleData add(long otherValue ){
+        SimpleData temp = new SimpleData(this.value + otherValue, true);
+        temp.dataID = this.dataID;
+        return temp;
     }
 
-    // this multiplies the value of a data object to this and returns
-    // this where value = this.value * other.value
-    public SimpleData multiply(SimpleData other) {
-        this.value = this.value * other.value;
-        return this;
+    // this multiplies the value of a data object by this and returns
+    // new data object where value = this.value * other.value
+    public SimpleData multiply(long otherValue) {
+        // this.value = this.value * other.value;
+        SimpleData temp = new SimpleData(this.value * otherValue, true);
+        temp.dataID = this.dataID;
+        return temp;
     }
 
 

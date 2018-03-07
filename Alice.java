@@ -6,48 +6,52 @@ import java.util.HashMap;
 public class Alice {
 
     public static void main(String[] args) {
+        // Here we simulate the local system, belonging to Alice
 
-        // create the files
-        // Data fileZero = new Data(BigInteger.ZERO, false);
-        // Data fileOne = new Data(BigInteger.ONE, false);
-
-        // this list stores the unencrypted and encrypted Id's of the files
+        // This list stores the unencrypted and encrypted Id's of the files
+        // Alice uses this to access the files after they have been sent to the Cloud
         HashMap<String, Long> fileIdentifiers = new HashMap<>();
 
-        // alice encrypts the files
+        // This is the simulated cloud, where the encrypted files will be sent
+        Cloud cloud = new Cloud();
+
+        // Alice creates the files
         SimpleData fileZero = new SimpleData(0, false);
         SimpleData fileOne = new SimpleData(1, false);
 
-        // alice stores the id's of the files, so they may be fetched
+        // Alice stores the ID's of the files, so they may be fetched later
+        // Note that the dataID is an encryption of 0 or 1, different from the files encrypted value
         fileIdentifiers.put("0", fileZero.getDataID());
         fileIdentifiers.put("1", fileOne.getDataID());
 
-        // alice encrypts the files
+        // Alice encrypts the files
         fileZero.encrypt();
         fileOne.encrypt();
 
-        // checking that id works
-        // System.out.println(fileOne.encrypt());
-        // System.out.println(fileZero.encrypt());
-        // System.out.println(fileOne.getDataID() + " " + fileZero.getDataID());
-        // System.out.println(fileOne.decrypt() + " " + fileZero.decrypt());
-        // System.out.println(fileIdentifiers.toString());
+        // Sending files to the cloud
+        cloud.addFile(fileZero);
+        cloud.addFile(fileOne);
 
-        // send files to the cloud
-        // alice removes these files from her system, and just keeps their identifiers
-        // from this point forward, we cannot access fileOne or fileZero
+        // Alice removes these files from her system, and just keeps their identifiers
+        fileZero = null;
+        fileOne = null;
+        // From this point forward, we cannot access fileOne or fileZero
 
-        // sometime later...
-        // Alice can't remember what's in the zero file, what could it be
+        // Sometime later...
+        // Alice can't remember what's in the zero file, what could it be?
 
-        // fetchedFileOne = Cloud.get(zeroFileID)
+        // We might as well check what's in the one file too, fetch both of the files
+        SimpleData fetchedFileZero = cloud.get(fileIdentifiers.get("0"));
+        SimpleData fetchedFileOne = cloud.get(fileIdentifiers.get("1"));
 
-        // Alice can't remember what's in the one file
-        // fetchedFileZero = Cloud.get(oneFileID)
 
-        // decyrpt, and confirm that it did what it should
-        // note that confirmation is a test, not something Alice can actually do
-        // TODO look into a formal test, but totally not necessary yet
+
+        // Now Alice decrypts the files
+        System.out.println("Decrypting file 0...");
+        fetchedFileZero.decrypt();
+        System.out.println("Decrypting file 1...");
+        fetchedFileOne.decrypt();
+
         // System.out.println("***" + ((0 == fileZero.decrypt()) ? "Success" : "Fail") + "***");
         // System.out.println("***" + ((1 == fileOne.decrypt()) ? "Success" : "Fail") + "***");
 
