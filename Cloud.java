@@ -19,7 +19,6 @@ public class Cloud {
     }
 
     // this function deals with the encrypted file request
-    // so right now, the fileName and fileValue are the same thing
     public Data get(BigInteger dataID) {
         // so here we call on all the operations to find the right data object
         Data a = files.get(0);

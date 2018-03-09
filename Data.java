@@ -3,16 +3,15 @@ import java.util.Random;
 
 public class Data {
 
+    // Using these to make code cleaner
     private static final BigInteger ZERO = BigInteger.ZERO;
-    private static final BigInteger ONE = BigInteger.ONE;
     private static final BigInteger TWO = BigInteger.valueOf(2);
-    private static final BigInteger N_ONE = BigInteger.valueOf(-1);
 
-
+    // value is the contents of data
     private BigInteger value;
     private boolean encrypted;
-    private BigInteger dataID; // this is essentially the encryption of value, with a different ciphertext
-
+    // this is essentially the encryption of value, with a different ciphertext
+    private BigInteger dataID;
 
     private static BigInteger p;
     private Random rand;
@@ -93,9 +92,7 @@ public class Data {
         return value;
     }
 
-    // There are two decrypt functions
-    // This one decrypts with the provided private key
-    // Should only be called by Alice
+
     public int decrypt() {
         if(!encrypted) {
             System.out.println("not encrypted");
@@ -112,33 +109,12 @@ public class Data {
     }
 
     private BigInteger randomOfBits(int numBits) {
-        // BigInteger randomNumber = rand.nextBigInteger() % (BigInteger) Math.pow(2, numBits);
+
         BigInteger randomNumber = new BigInteger(numBits, rand);
-        // return Math.abs(randomNumber);
         return randomNumber;
     }
 
     public BigInteger getValue() { return value;}
-    // methods for circuit stuff
-
-
-    // TODO, not using these, probably won't
-    // so because we don't worry about integer overflow, this is actually xor
-    // this adds the value of a data object to this and returns this where value = this.value + other.value
-    public Data add(BigInteger otherValue ){
-        Data temp = new Data(this.value.add(otherValue), true);
-        temp.dataID = this.dataID;
-        return temp;
-    }
-
-    // this multiplies the value of a data object by this and returns
-    // new data object where value = this.value * other.value
-    public Data multiply(BigInteger otherValue) {
-        // this.value = this.value * other.value;
-        Data temp = new Data(this.value.multiply(otherValue), true);
-        temp.dataID = this.dataID;
-        return temp;
-    }
 
 
 }
