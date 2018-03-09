@@ -32,10 +32,13 @@ public class Cloud {
         // if the decrypted result of the circuit is 1, file a is the match, otherwise it's file b
         // note that we are decrypting here, but its not the decryption of a file,
         // just the result of the circuit
+        // TODO, get value should be get id
         BigInteger dID = dataID;
         BigInteger result = (a.getValue().multiply(dID)).add(((dID.multiply(dID)).add(ONE)).multiply(b.getValue()));
         Data resultOfCircuit = new Data(result, true);
-        System.out.println("Decrypting result of circuit");
+
+
+        // TODO maybe add a safe decrypt, which will only decrypt a file if the id is unknown
         int r = resultOfCircuit.decrypt();
         return (r == 0) ? b : a;
     }

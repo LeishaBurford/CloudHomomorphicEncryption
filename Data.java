@@ -18,19 +18,18 @@ public class Data {
     private Random rand;
 
     private static final int lambda = 4;
-    private static final int eta = (lambda * lambda) - 1;
-    private static final int multiplier = lambda;
-    private static final int noise = lambda - 1;
+    private static final int eta = (lambda * lambda) - 1; // 15
+    private static final int multiplier = lambda; // 4
+    private static final int noise = lambda - 1; // 3
 
     // for testing
-    private boolean testing = true;
+    private boolean testing = false;
 
     public Data(BigInteger value, boolean encrypted) {
         rand = new Random();
         this.value = value;
         this.encrypted = encrypted;
         if(p == null) {
-            System.out.println("generating p...");
             generatePrivateKey();
         }
         setDataID();
@@ -68,8 +67,8 @@ public class Data {
     private void generatePrivateKey() {
 
         BigInteger lowerBound = BigInteger.valueOf( (long)Math.pow(2, eta - 1) );
-        System.out.println("Lower bound is: " + lowerBound);
-        // BigInteger p;
+
+
         // get an odd number in range [ 2^(eta - 1), 2^eta )
         do {
             // random in range [ 0, (2 ^ eta) )
@@ -77,11 +76,6 @@ public class Data {
         } while (p.compareTo(lowerBound) < 0 || (p.mod(TWO)).compareTo(ZERO) == 0  );
         // ^ keep going until it satisfies conditions
         // TODO find more efficient solution to above loop
-
-        // BigInteger b = BigInteger.probablePrime((int)Math.pow(eta, 2), rand);
-
-        // p = b;
-
 
         if (testing)
             System.out.println("p is: "+ p );
@@ -127,6 +121,8 @@ public class Data {
     public BigInteger getValue() { return value;}
     // methods for circuit stuff
 
+
+    // TODO, not using these, probably won't
     // so because we don't worry about integer overflow, this is actually xor
     // this adds the value of a data object to this and returns this where value = this.value + other.value
     public Data add(BigInteger otherValue ){
