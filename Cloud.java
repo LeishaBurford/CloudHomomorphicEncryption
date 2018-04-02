@@ -4,8 +4,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Cloud {
-    private static final BigInteger ONE = BigInteger.ONE;
+    // private static final BigInteger ONE = BigInteger.ONE;
 
+    // the circuit needs a reference to the value 1
+    private static final Data ONE = new Data(BigInteger.ONE, false);
     private ArrayList<Data> files;
     private boolean testing = true;
 
@@ -24,6 +26,8 @@ public class Cloud {
         Data a = files.get(0);
         Data b = files.get(1);
 
+        ONE.encrypt();
+
         // the circuit to fetch the specified file
         // if q then a else b
         // (q and a) or ((not q) and b)
@@ -33,7 +37,7 @@ public class Cloud {
         // just the result of the circuit
         // TODO, get value should be get id
         BigInteger dID = dataID;
-        BigInteger result = (a.getValue().multiply(dID)).add(((dID.multiply(dID)).add(ONE)).multiply(b.getValue()));
+        BigInteger result = (a.getValue().multiply(dID)).add(((dID.multiply(dID)).add(ONE.getValue())).multiply(b.getValue()));
         Data resultOfCircuit = new Data(result, true);
 
 
