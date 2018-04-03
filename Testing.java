@@ -34,16 +34,16 @@ public class Testing {
             // so i don't think this will happen, but it might and i want to know if it does
 
 
-            // here the remainder of a % b is calc'd as r = a - floor(a / b) * b
-            // so when bigInteger does integer division, it rounds closest to zero, rather than to
-            // lowest integer, so that causes problems when the numerator is negative
-            // we fix that problem here
-            BigInteger aOverMod = a.divide(b);
-            // if the number is negative add -1
-            if(aOverMod.compareTo(ZERO) < 0) {
-                aOverMod = aOverMod.add(N_ONE);
+            // here the remainder of a % b is calc'd as r = a - toNearestInt(a / b) * b
+            // result = a.subtract(divRoundNearestInt(a, b).multiply(b));
+            BigInteger temp = a.divide(b);
+
+            result = a.subtract(temp.multiply(b));
+            if(result.compareTo(ZERO) < 0 ){ // this happens when a is < 0
+
+                temp = temp.add(N_ONE); // rounding up instead of down
+                result = a.subtract(temp.multiply(b));
             }
-            result = a.subtract(aOverMod.multiply(b));
             return result;
         } else {
             // TODO make more efficient? if time
@@ -82,7 +82,6 @@ public class Testing {
     }
 
     public static BigInteger divRoundNearestInt(BigInteger a, BigInteger b){
-
         // calc the quotient
         BigInteger quotient =  a.divide(b); // note this is auto rounded to zero
         // calc the remainder
@@ -108,34 +107,34 @@ public class Testing {
             return quotient;
         }
 
-        // i really hope this doesn't happen
-        // if (testing)
-        System.out.println("######## Decimal is 0.5 #######");
+        // I really hope this doesn't happen
+
         return quotient;
-
-
     }
     public static void main(String[] args) {
         rand = new Random();
-        // BigInteger a = BigInteger.valueOf(5);
-        // BigInteger b = BigInteger.valueOf(-5);
-        // BigInteger c = BigInteger.valueOf(4);
-        // BigInteger d = BigInteger.valueOf(3);
-        //
-        // System.out.println(a.divide(c) + " " + a. divide(d));
-        // System.out.println(b.divide(c) + " " + b. divide(d));
-        //
-        // System.out.println(divRoundNearestInt(a, c) + " " + divRoundNearestInt(a, d));
-        // System.out.println(divRoundNearestInt(b, c) + " " + divRoundNearestInt(b, d));
+        BigInteger a = BigInteger.valueOf(-51);
+        BigInteger b = BigInteger.valueOf(8);
+        BigInteger c = BigInteger.valueOf(51);
+        BigInteger d = BigInteger.valueOf(8);
 
-        long someKey = 1345;
-        long someOtherKey = 3457;
-        long noise1 = 243;
-        long noise2 = 987;
-        long cipherText = someKey * noise1 + 2 * noise2 + someOtherKey;
-        long decrypted = (cipherText % someKey ) % 2;
+        System.out.println(a.divide(c) + " " + a. divide(d));
+        System.out.println(b.divide(c) + " " + b. divide(d));
 
-        System.out.println(decrypted);
+        System.out.println(modOp(a, b) + " " + modOp(c, d));
+        // System.out.println(modOp(b, c) + " " + modOp(b, d));
+
+        // System.out.println(b.subtract(N_ONE));
+        // Integer a = 5;
+        // Integer b = -1;
+        // // System.out.println(b.compareTo(a));
+        // BigInteger c = new BigInteger(4, rand);
+        // for(int i = 0; i < 20; i++) {
+        //     System.out.println(c);
+        //     c = new BigInteger(4, rand);
+        // }
+
+        // System.out.println(decrypted);
 
 
 

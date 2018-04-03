@@ -35,7 +35,7 @@ public class BigData {
         // initialize the random generator
         rand = new Random();
         if(testing)
-            System.out.println("Initializing LongData object, value = " + value
+            System.out.println("Initializing Big object, value = " + value
                     + " -- " + ((encrypted)? "encrypted" : "unencrypted"));
         this.value = value;
         this.encrypted = encrypted;
@@ -58,13 +58,12 @@ public class BigData {
     }
 
     private void generatePrivateKey() {
-        // Generate a random prime integer p of size η bits
-        p = BigInteger.probablePrime(eta, rand);
-        // random between 0 and 2^exponent - 1, inclusive
-        // do {
-        //     p = new BigInteger(eta - 1, rand);
-        //     p = p.add(ONE.add((TWO.pow(eta).subtract(TWO.pow(eta - 1))).abs()));
-        // } while(p.mod(TWO).compareTo(ZERO) == 0 || p.compareTo(TWO.pow(eta)) == 0);
+        // Generate a random integer in range [0, 2^eta)
+        // now to limit the lower boundary to 2^(eta - 1) and ensure p is odd
+        do {
+            p = new BigInteger(eta, rand);
+            // p = p.add(ONE.add((TWO.pow(eta).subtract(TWO.pow(eta - 1))).abs()));
+        } while(p.mod(TWO).compareTo(ZERO) == 0 || p.compareTo(TWO.pow(eta - 1)) < 0);
 
         if (testing)
             System.out.println("\tValue of p is: " + p);
@@ -96,7 +95,8 @@ public class BigData {
                     max = x[i];
                 }
             }
-        } while((max.mod(TWO)).compareTo(ZERO) == 0 || ((max.mod(p)).mod(TWO)).compareTo(ZERO) != 0); // Restart unless max is odd and max % p is even.
+        } while((max.mod(TWO)).compareTo(ZERO) == 0 || ((max.mod(p)).mod(TWO)).compareTo(ZERO) != 0);
+        // ^ Restart unless max is odd and max % p is even.
 
         if (testing)
             System.out.println("\tValue of x[0] is: " + max);
@@ -119,7 +119,7 @@ public class BigData {
         r = (positive) ? r : r.multiply(N_ONE);
 
         // if (testing)
-        //     System.out.println("\tValue of r is: " + r);
+        //         System.out.println("\tValue of r is: " + r);
         return r;
     }
 
@@ -130,9 +130,10 @@ public class BigData {
         BigInteger q;
         BigInteger upperLimit = (TWO.pow(gamma)).divide(p);
         do {
-            // random between 0 and 2^(gamma - eta)- 1, inclusive
-            q = new BigInteger(gamma - eta, rand);
-        } while (q.compareTo(upperLimit) > 0 && q.mod(TWO).compareTo(BigInteger.ZERO) == 0);
+            // random in range [0, 2^gamma)
+            q = new BigInteger(gamma - 1, rand);
+        } while (q.compareTo(upperLimit) >= 0 || q.mod(TWO).compareTo(BigInteger.ZERO) == 0);
+        // ^ ensure its not odd, and not greater than (2^gamma) / p
 
         // if (testing)
         //     System.out.println("\tValue of q is: " + q);
@@ -171,8 +172,12 @@ public class BigData {
                     ") % " + x[0]);
 
             // c = (m + 2* r + 2 * sumOfS ) % x[0]
-        }while ((TWO.multiply(r)).abs().compareTo(p.divide(TWO).abs()) >= 0);
+        } while ((TWO.multiply(r)).abs().compareTo(p.divide(TWO).abs()) >= 0);
+        // ^ enforcing that |2r| < |p/2|
+        if (testing)
+            System.out.println(TWO.multiply(r) + " " + p.divide(TWO));
 
+        // the encryption
         value = ((value.add(modOp(TWO.multiply(r), x[0]))).add(modOp(TWO.multiply(sumOfS), x[0]))).mod(x[0]);
         // value = modOp((value.add(TWO.multiply(r))).add(p.multiply(q)), x[0]);
         // if (testing)
@@ -188,12 +193,16 @@ public class BigData {
     private BigInteger modOp(BigInteger a, BigInteger b) {
         BigInteger result;
         if (a.compareTo(ZERO) < 0 || b.compareTo(ZERO) < 0) {
-            // so i don't think this will happen, but it might and i want to know if it does
-            if (testing && b.compareTo(ZERO) < 0)
-                System.out.println(" ***** Mod is negative *****");
-
             // here the remainder of a % b is calc'd as r = a - toNearestInt(a / b) * b
-            result = a.subtract(divRoundNearestInt(a, b).multiply(b));
+            // result = a.subtract(divRoundNearestInt(a, b).multiply(b));
+            BigInteger temp = a.divide(b);
+
+            result = a.subtract(temp.multiply(b));
+            if(result.compareTo(ZERO) < 0 ){
+
+                temp = temp.add(N_ONE); // rounding up instead of down
+                result = a.subtract(temp.multiply(b));
+            }
             return result;
         } else {
             // TODO make more efficient? if time
@@ -230,7 +239,7 @@ public class BigData {
             return quotient;
         }
 
-        // i really hope this doesn't happen
+        // I really hope this doesn't happen
         if (testing)
             System.out.println("######## Decimal is 0.5 #######");
         return quotient;
