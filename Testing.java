@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Testing {
@@ -112,18 +113,13 @@ public class Testing {
         return quotient;
     }
     public static void main(String[] args) {
-        rand = new Random();
-        BigInteger a = BigInteger.valueOf(-51);
-        BigInteger b = BigInteger.valueOf(8);
-        BigInteger c = BigInteger.valueOf(51);
-        BigInteger d = BigInteger.valueOf(8);
-
-        System.out.println(a.divide(c) + " " + a. divide(d));
-        System.out.println(b.divide(c) + " " + b. divide(d));
-
-        System.out.println(modOp(a, b) + " " + modOp(c, d));
-        // System.out.println(modOp(b, c) + " " + modOp(b, d));
-
+        ArrayList<Integer> testing = new ArrayList<>();
+        testing.add(1);
+        testing.add(3);
+        testing.add(0);
+        for(Integer i : testing) {
+            System.out.println(i);
+        }
         // System.out.println(b.subtract(N_ONE));
         // Integer a = 5;
         // Integer b = -1;

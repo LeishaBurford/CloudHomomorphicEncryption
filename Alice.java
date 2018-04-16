@@ -27,6 +27,10 @@ public class Alice {
         fileIdentifiers.put("0", fileZero.getDataID());
         fileIdentifiers.put("1", fileOne.getDataID());
 
+        // now our file ref's are stored, we need new id's for the cloud
+        fileZero = new Data(BigInteger.ZERO, false);
+        fileOne = new Data(BigInteger.ONE, false);
+
         // Alice encrypts the files
         System.out.println("Encrypting the files...");
         fileZero.encrypt();

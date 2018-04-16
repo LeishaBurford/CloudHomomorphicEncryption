@@ -22,7 +22,7 @@ public class Data {
     private static final int noise = lambda - 1; // 3
 
     // for testing
-    private boolean testing = false;
+    private boolean testing = true;
 
     public Data(BigInteger value, boolean encrypted) {
         rand = new Random();
@@ -77,7 +77,7 @@ public class Data {
         // TODO find more efficient solution to above loop
 
         if (testing)
-            System.out.println("p is: "+ p );
+            System.out.println("p is: "+ p);
     }
 
     public BigInteger encrypt(){
@@ -88,6 +88,7 @@ public class Data {
         value = value.add(p.multiply(randomOfBits(multiplier))).add(TWO.multiply(randomOfBits(noise)));
         if (testing)
             System.out.println(" encrypted to " + value);
+
         encrypted = true;
         return value;
     }

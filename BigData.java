@@ -184,7 +184,6 @@ public class BigData {
             System.out.println("\tValue encrypted to: " + value);
 
         encrypted = true;
-
         return value;
     }
 
